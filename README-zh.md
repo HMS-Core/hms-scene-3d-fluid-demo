@@ -1,5 +1,5 @@
 # 3D流体模拟示例代码
-中文 | [English](https://github.com/HMS-Core/hms-scene-3d-fluid-demo)
+中文 | [English](README.md)
 ## 目录
 
 * [简介](#简介)
