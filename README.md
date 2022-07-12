@@ -6,6 +6,7 @@ English | [中文](README-zh.md)
 * [Getting Started](#getting-started)
 * [Supported Environments](#supported-environments)
 * [Result](#result)
+* [Technical Support](#technical-support)
 * [License](#license)
 
 ## Introduction
