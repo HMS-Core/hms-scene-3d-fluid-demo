@@ -16,6 +16,10 @@
 
 package com.huawei.scenekit.fluiddemo3d;
 
+import static android.content.ContentValues.TAG;
+import static com.huawei.hms.scene.sdk.render.FluidComponent.FluidOperateType.ADD;
+import static com.huawei.hms.scene.sdk.render.FluidComponent.FluidOperateType.REDUCE;
+
 import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -24,9 +28,14 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.huawei.hms.scene.math.Vector3;
@@ -57,6 +66,47 @@ public class DemoActivity extends Activity implements SensorEventListener {
     private Node fluidNode;
     private GestureEvent gesture;
     private Texture fluidTexture;
+    private float setVolume = 0.5f;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (fluidNode == null) {
+            return false;
+        }
+        FluidComponent fluidComponent = fluidNode.getComponent(FluidComponent.descriptor());
+        if (fluidComponent == null) {
+            return false;
+        }
+
+        switch (item.getItemId()) {
+            case R.id.add_item:
+                if (setVolume < 0.8f) {
+                    setVolume = setVolume + 0.1f;
+                    // 默认最大体积750*10,每加减水一次体积变化1/10
+                    fluidComponent.addOrReduceFluid(ADD, 750.0f);
+                } else {
+                    Toast.makeText(this,"Fluid is full",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.reduce_item:
+                if (setVolume > 0.f) {
+                    setVolume = setVolume - 0.1f;
+                    fluidComponent.addOrReduceFluid(REDUCE, 750.0f);
+                } else {
+                    Toast.makeText(this,"Fluid is gone",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,7 +117,7 @@ public class DemoActivity extends Activity implements SensorEventListener {
         createFluidScene();
 
         Texture.builder()
-            .setUri(Uri.parse("Scene/skybox_sea.dds"))
+            .setUri(Uri.parse("Scene/fluid.dds"))
             .load(this, new FluidTextureLoadEventListener(new WeakReference<>(this)));
         Model.builder()
             .setUri(Uri.parse("Island/island2.glb"))
